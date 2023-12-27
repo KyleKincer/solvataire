@@ -26,13 +26,13 @@ struct TriangleBoard {
 
 impl TriangleBoard {
     fn new(size: usize) -> Self {
-        let mut grid = vec![vec![PegState::Invalid; size]];
+        let mut grid = vec![vec![PegState::Invalid; size]; size];
         for i in 0..size {
             let mut start = 0;
-            if i % 2 != 0 || i == 0 {
+            if i == 0 {
                 start = size.div_floor(2) - i;
             } else {
-                start = size.div_floor(2) - (i - 1);
+                start = size.div_floor(2) - i.div_ceil(2);
             }
             for j in start..start + i + 1 {
                 grid[i][j] = PegState::Occupied;
