@@ -19,13 +19,18 @@ enum PegState {
     Invalid,
 }
 
+enum InitialHole {
+    Center,
+    At(usize, usize),
+}
+
 #[derive(Debug)]
 struct TriangleBoard {
     grid: Vec<Vec<PegState>>,
 }
 
 impl TriangleBoard {
-    fn new(size: usize) -> Self {
+    fn new(size: usize, initial_hole: Option<InitialHole>) -> Self {
         let mut grid = vec![vec![PegState::Invalid; size]; size];
         for i in 0..size {
             let mut start = 0;
@@ -38,6 +43,20 @@ impl TriangleBoard {
                 grid[i][j] = PegState::Occupied;
             }
         }
+        let center = size.div_floor(2);
+        if let Some(hole) = initial_hole {
+            match hole {
+                InitialHole::Center => {
+                    grid[center][center] = PegState::Empty;
+                }
+                InitialHole::At(i, j) => {
+                    grid[i][j] = PegState::Empty;
+                }
+            }
+        } else {
+            grid[center][center] = PegState::Empty;
+        }
+
         TriangleBoard { grid }
     }
 }
@@ -55,7 +74,7 @@ struct Move {
 
 fn main() {
     let mut game = Game {
-        board: Board::Triangle(TriangleBoard::new(5)),
+        board: Board::Triangle(TriangleBoard::new(5, None)),
         moves: Vec::new(),
     };
     println!("{:?}", game);
