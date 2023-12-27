@@ -6,6 +6,22 @@ enum Board {
     English(EnglishBoard),
 }
 
+impl Board {
+    fn find_valid_moves(&self) -> Vec<Move> {
+        match self {
+            Board::English(board) => unimplemented!(),
+            Board::Triangle(board) => board.grid.iter().enumerate().flat_map(|(i, row)| {
+                row.iter().enumerate().filter_map(|(j, peg)| match peg {
+                    PegState::Occupied => {
+                        todo!()
+                    }
+                    _ => None,
+                })
+            }),
+        }
+    }
+}
+
 #[derive(Debug)]
 struct Game {
     board: Board,
@@ -77,5 +93,6 @@ fn main() {
         board: Board::Triangle(TriangleBoard::new(5, None)),
         moves: Vec::new(),
     };
+
     println!("{:?}", game);
 }
