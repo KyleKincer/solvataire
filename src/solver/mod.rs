@@ -1,6 +1,7 @@
 use std::collections::HashSet;
+use strum_macros::{Display, EnumIter};
 
-#[derive(Debug, Clone, Eq, PartialEq, Hash)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash, Display, EnumIter)]
 pub enum Board {
     Triangle(TriangleBoard),
     English(EnglishBoard),
@@ -196,7 +197,7 @@ pub enum InitialHole {
     At(usize, usize),
 }
 
-#[derive(Debug, Clone, Eq, PartialEq, Hash)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash, Default)]
 pub struct TriangleBoard {
     grid: Vec<Vec<PegState>>,
 }
@@ -244,7 +245,7 @@ impl TriangleBoard {
     }
 }
 
-#[derive(Debug, Clone, Eq, PartialEq, Hash)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash, Default)]
 struct EnglishBoard {
     grid: Vec<Vec<PegState>>,
 }
