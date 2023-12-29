@@ -134,7 +134,7 @@ impl Board {
         if self.is_solved() {
             // self.display();
             // println!("Solved!");
-            solutions.insert(Solution::new(self.clone(), move_history.clone()));
+            solutions.insert(Solution::new(move_history.clone()));
             return;
         }
         let moves = self.find_valid_moves();
@@ -175,13 +175,12 @@ impl Board {
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct Solution {
-    board: Board,
     moves: Vec<Move>,
 }
 
 impl Solution {
-    fn new(board: Board, moves: Vec<Move>) -> Self {
-        Solution { board, moves }
+    fn new(moves: Vec<Move>) -> Self {
+        Solution { moves }
     }
 }
 
