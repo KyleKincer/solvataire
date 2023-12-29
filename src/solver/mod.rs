@@ -204,15 +204,14 @@ pub struct TriangleBoard {
 impl TriangleBoard {
     pub fn new(size: usize, initial_hole: InitialHole) -> Self {
         let mut grid = vec![vec![PegState::Invalid; size]; size];
-        for i in 0..size {
-            let mut start = 0;
-            if i == 0 {
-                start = size.div_floor(2) - i;
+        for (i, row) in grid.iter_mut().enumerate() {
+            let start = if i == 0 {
+                size.div_floor(2) - i
             } else {
-                start = size.div_floor(2) - i.div_ceil(2);
-            }
-            for j in start..start + i + 1 {
-                grid[i][j] = PegState::Occupied;
+                size.div_floor(2) - i.div_ceil(2)
+            };
+            for peg in &mut row[start..start + i + 1] {
+                *peg = PegState::Occupied;
             }
         }
         let center = size.div_floor(2);
