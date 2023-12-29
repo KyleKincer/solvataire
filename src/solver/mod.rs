@@ -31,9 +31,9 @@ impl Board {
                                 && board.grid[i][j - 2] == PegState::Empty
                             {
                                 moves.push(Move {
-                                    from: (i, j),
-                                    to: (i, j - 2),
-                                    eliminate: (i, j - 1),
+                                    from: (i.try_into().unwrap(), j.try_into().unwrap()),
+                                    to: (i.try_into().unwrap(), (j - 2) as u8),
+                                    eliminate: (i.try_into().unwrap(), (j - 1) as u8),
                                 });
                             }
 
@@ -43,9 +43,9 @@ impl Board {
                                 && board.grid[i][j + 2] == PegState::Empty
                             {
                                 moves.push(Move {
-                                    from: (i, j),
-                                    to: (i, j + 2),
-                                    eliminate: (i, j + 1),
+                                    from: (i.try_into().unwrap(), j.try_into().unwrap()),
+                                    to: (i.try_into().unwrap(), (j + 2) as u8),
+                                    eliminate: (i.try_into().unwrap(), (j + 1) as u8),
                                 });
                             }
 
@@ -57,9 +57,9 @@ impl Board {
                                 && board.grid[i - 2][j - 1] == PegState::Empty
                             {
                                 moves.push(Move {
-                                    from: (i, j),
-                                    to: (i - 2, j - 1),
-                                    eliminate: (i - 1, j - if odd_row { 0 } else { 1 }),
+                                    from: (i.try_into().unwrap(), j.try_into().unwrap()),
+                                    to: ((i - 2) as u8, (j - 1) as u8),
+                                    eliminate: ((i - 1) as u8, (j - if odd_row { 0 } else { 1 }) as u8),
                                 });
                             }
 
@@ -71,9 +71,9 @@ impl Board {
                                 && board.grid[i - 2][j + 1] == PegState::Empty
                             {
                                 moves.push(Move {
-                                    from: (i, j),
-                                    to: (i - 2, j + 1),
-                                    eliminate: (i - 1, j + if odd_row { 1 } else { 0 }),
+                                    from: (i.try_into().unwrap(), j.try_into().unwrap()),
+                                    to: ((i - 2) as u8, (j + 1) as u8),
+                                    eliminate: ((i - 1) as u8, (j + if odd_row { 1 } else { 0 }) as u8),
                                 });
                             }
 
@@ -85,9 +85,9 @@ impl Board {
                                 && board.grid[i + 2][j - 1] == PegState::Empty
                             {
                                 moves.push(Move {
-                                    from: (i, j),
-                                    to: (i + 2, j - 1),
-                                    eliminate: (i + 1, j - if odd_row { 0 } else { 1 }),
+                                    from: (i.try_into().unwrap(), j.try_into().unwrap()),
+                                    to: ((i + 2) as u8, (j - 1) as u8),
+                                    eliminate: ((i + 1) as u8, (j - if odd_row { 0 } else { 1 }) as u8),
                                 });
                             }
 
@@ -99,9 +99,9 @@ impl Board {
                                 && board.grid[i + 2][j + 1] == PegState::Empty
                             {
                                 moves.push(Move {
-                                    from: (i, j),
-                                    to: (i + 2, j + 1),
-                                    eliminate: (i + 1, j + if odd_row { 1 } else { 0 }),
+                                    from: (i.try_into().unwrap(), j.try_into().unwrap()),
+                                    to: ((i + 2) as u8, (j + 1) as u8),
+                                    eliminate: ((i + 1) as u8, (j + if odd_row { 1 } else { 0 }) as u8),
                                 });
                             }
                         }
@@ -116,9 +116,9 @@ impl Board {
         match self {
             Board::English(_) => unimplemented!(),
             Board::Triangle(board) => {
-                board.grid[mov.from.0][mov.from.1] = PegState::Empty;
-                board.grid[mov.to.0][mov.to.1] = PegState::Occupied;
-                board.grid[mov.eliminate.0][mov.eliminate.1] = PegState::Empty;
+                board.grid[mov.from.0 as usize][mov.from.1 as usize] = PegState::Empty;
+                board.grid[mov.to.0 as usize][mov.to.1 as usize] = PegState::Occupied;
+                board.grid[mov.eliminate.0 as usize][mov.eliminate.1 as usize] = PegState::Empty;
             }
         }
     }
@@ -251,7 +251,7 @@ struct EnglishBoard {
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 struct Move {
-    from: (usize, usize),
-    to: (usize, usize),
-    eliminate: (usize, usize),
+    from: (u8, u8),
+    to: (u8, u8),
+    eliminate: (u8, u8),
 }
