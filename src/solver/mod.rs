@@ -1,4 +1,6 @@
+use rayon::prelude::*;
 use std::collections::HashSet;
+use std::sync::{Arc, Mutex};
 use strum_macros::{Display, EnumIter};
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash, Display, EnumIter)]
@@ -59,7 +61,10 @@ impl Board {
                                 moves.push(Move {
                                     from: (i.try_into().unwrap(), j.try_into().unwrap()),
                                     to: ((i - 2) as u8, (j - 1) as u8),
-                                    eliminate: ((i - 1) as u8, (j - if odd_row { 0 } else { 1 }) as u8),
+                                    eliminate: (
+                                        (i - 1) as u8,
+                                        (j - if odd_row { 0 } else { 1 }) as u8,
+                                    ),
                                 });
                             }
 
@@ -73,7 +78,10 @@ impl Board {
                                 moves.push(Move {
                                     from: (i.try_into().unwrap(), j.try_into().unwrap()),
                                     to: ((i - 2) as u8, (j + 1) as u8),
-                                    eliminate: ((i - 1) as u8, (j + if odd_row { 1 } else { 0 }) as u8),
+                                    eliminate: (
+                                        (i - 1) as u8,
+                                        (j + if odd_row { 1 } else { 0 }) as u8,
+                                    ),
                                 });
                             }
 
@@ -87,7 +95,10 @@ impl Board {
                                 moves.push(Move {
                                     from: (i.try_into().unwrap(), j.try_into().unwrap()),
                                     to: ((i + 2) as u8, (j - 1) as u8),
-                                    eliminate: ((i + 1) as u8, (j - if odd_row { 0 } else { 1 }) as u8),
+                                    eliminate: (
+                                        (i + 1) as u8,
+                                        (j - if odd_row { 0 } else { 1 }) as u8,
+                                    ),
                                 });
                             }
 
@@ -101,7 +112,10 @@ impl Board {
                                 moves.push(Move {
                                     from: (i.try_into().unwrap(), j.try_into().unwrap()),
                                     to: ((i + 2) as u8, (j + 1) as u8),
-                                    eliminate: ((i + 1) as u8, (j + if odd_row { 1 } else { 0 }) as u8),
+                                    eliminate: (
+                                        (i + 1) as u8,
+                                        (j + if odd_row { 1 } else { 0 }) as u8,
+                                    ),
                                 });
                             }
                         }
@@ -124,35 +138,44 @@ impl Board {
     }
 
     pub fn solve(&mut self) -> HashSet<Solution> {
-        let mut move_history = Vec::new();
-        let mut solutions = HashSet::new();
-        self.solve_recursive(&mut solutions, &mut move_history);
-        solutions
+        let solutions = Arc::new(Mutex::new(HashSet::new()));
+
+        self.solve_recursive(&solutions, &mut Vec::new());
+
+        let solutions = Arc::try_unwrap(solutions).expect("Lock still has multiple owners");
+        solutions.into_inner().expect("Mutex cannot be locked")
     }
 
-    fn solve_recursive(&self, solutions: &mut HashSet<Solution>, move_history: &mut Vec<Move>) {
+    fn solve_recursive(
+        &self,
+        solutions: &Arc<Mutex<HashSet<Solution>>>,
+        move_history: &mut Vec<Move>,
+    ) {
         if self.is_solved() {
             // self.display();
-            // println!("Solved!");
-            solutions.insert(Solution::new(move_history.clone()));
+            println!("Solved!");
+            let mut solutions_guard = solutions.lock().unwrap(); // Acquire the lock
+            solutions_guard.insert(Solution::new(move_history.clone())); // Modify the HashSet
             return;
         }
         let moves = self.find_valid_moves();
         if moves.is_empty() {
-            // self.display();
+            self.display();
             // println!("No more moves");
             // clear the terminal
             // print!("{}[2J", 27 as char);
             return;
         }
-        for mov in &moves {
+        moves.par_iter().for_each(|mov| {
             let mut new_board = self.clone();
             new_board.execute_move(mov);
-            // new_board.display();
-            move_history.push(mov.clone());
-            new_board.solve_recursive(solutions, move_history);
-            move_history.pop();
-        }
+
+            let mut new_move_history = move_history.clone();
+            new_move_history.push(mov.clone());
+
+            let new_solutions = solutions.clone();
+            new_board.solve_recursive(&new_solutions, &mut new_move_history);
+        });
     }
 
     fn is_solved(&self) -> bool {
