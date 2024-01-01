@@ -12,14 +12,14 @@ pub enum Board {
 impl Board {
     fn display(&self) {
         match self {
-            Board::English(_) => unimplemented!(),
+            Board::English(_) => todo!("English board is not yet implemented"),
             Board::Triangle(board) => board.display(),
         }
     }
 
     fn find_valid_moves(&self) -> Vec<Move> {
         match self {
-            Board::English(_) => unimplemented!(),
+            Board::English(_) => todo!("English board is not yet implemented"),
             Board::Triangle(board) => {
                 let mut moves: Vec<Move> = Vec::new();
                 for (i, row) in board.grid.iter().enumerate() {
@@ -128,7 +128,7 @@ impl Board {
 
     fn execute_move(&mut self, mov: &Move) {
         match self {
-            Board::English(_) => unimplemented!(),
+            Board::English(_) => todo!("English board is not yet implemented"),
             Board::Triangle(board) => {
                 board.grid[mov.from.0 as usize][mov.from.1 as usize] = PegState::Empty;
                 board.grid[mov.to.0 as usize][mov.to.1 as usize] = PegState::Occupied;
@@ -153,14 +153,14 @@ impl Board {
     ) {
         if self.is_solved() {
             // self.display();
-            println!("Solved!");
+            // println!("Solved!");
             let mut solutions_guard = solutions.lock().unwrap(); // Acquire the lock
             solutions_guard.insert(Solution::new(move_history.clone())); // Modify the HashSet
             return;
         }
         let moves = self.find_valid_moves();
         if moves.is_empty() {
-            self.display();
+            // self.display();
             // println!("No more moves");
             // clear the terminal
             // print!("{}[2J", 27 as char);
@@ -180,7 +180,7 @@ impl Board {
 
     fn is_solved(&self) -> bool {
         match self {
-            Board::English(_) => unimplemented!(),
+            Board::English(_) => todo!("English board is not yet implemented"),
             Board::Triangle(board) => {
                 let mut count = 0;
                 for row in &board.grid {
