@@ -149,13 +149,13 @@ impl Board {
     fn solve_recursive(
         &self,
         solutions: &Arc<Mutex<HashSet<Solution>>>,
-        move_history: &mut Vec<Move>,
+        move_history: &mut [Move],
     ) {
         if self.is_solved() {
             // self.display();
             // println!("Solved!");
             let mut solutions_guard = solutions.lock().unwrap(); // Acquire the lock
-            solutions_guard.insert(Solution::new(move_history.clone())); // Modify the HashSet
+            solutions_guard.insert(Solution::new(move_history.to_owned())); // Modify the HashSet
             return;
         }
         let moves = self.find_valid_moves();
@@ -170,7 +170,7 @@ impl Board {
             let mut new_board = self.clone();
             new_board.execute_move(mov);
 
-            let mut new_move_history = move_history.clone();
+            let mut new_move_history = move_history.to_owned();
             new_move_history.push(mov.clone());
 
             let new_solutions = solutions.clone();
